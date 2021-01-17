@@ -19,7 +19,7 @@ typedef struct pic32UartPeriphReg_s
 //! This structure was built around structures found in plib.h
 typedef struct pic32UartPeriph_s 
 {
-    struct pic32_periph_uart_mode_s 
+    struct pic32UartPeriphMode_s 
     {
         union 
         {
@@ -47,7 +47,7 @@ typedef struct pic32UartPeriph_s
         volatile uint32_t inv;
     } mode;
 
-    struct pic32_periph_uart_sta_s 
+    struct pic32UartPeriphSta_s 
     {
         union 
         {
@@ -103,27 +103,27 @@ pic32UartPeriph_t * const uart_peripherals[UART_MAX_CHANNEL] =
 
 void uart_port_init(uint8_t channel, uint32_t baud) 
 {
-    struct pic32_periph_uart_mode_s mode;
+    struct pic32UartPeriphMode_s mode;
     mode.reg = 0;
-    struct pic32_periph_uart_sta_s sta;
+    struct pic32UartPeriphSta_s sta;
     sta.reg = 0;
     // Ensure that channel is valid
     assert(channel > 0);
     assert(channel <= UART_MAX_CHANNEL);
     // Get a pointer to the UART
-    pic32UartPeriph_t *uart_ptr = uart_peripherals[channel - 1];
+    pic32UartPeriph_t *p_uart = uart_peripherals[channel - 1];
     // Initialize regs
-    uart_ptr->mode.reg = 0;
-    uart_ptr->sta.reg = 0;
+    p_uart->mode.reg = 0;
+    p_uart->sta.reg = 0;
     // Calculate and set baud rate
-    uart_ptr->brg.reg = ((PERIPH_CLK_FREQ / baud + 8) / 16UL) - 1UL;
+    p_uart->brg.reg = ((PERIPH_CLK_FREQ / baud + 8) / 16UL) - 1UL;
     // Peripheral on
     mode.bits.ON = 1;
-    uart_ptr->mode.reg = mode.reg;
+    p_uart->mode.reg = mode.reg;
     // Finally enable TX and RX
     sta.bits.UTXEN = 1;
     sta.bits.URXEN = 1;
-    uart_ptr->sta.reg = sta.reg;
+    p_uart->sta.reg = sta.reg;
 }
 
 void uart_port_transmit(uint8_t channel, const uint8_t *pkt, uint32_t pkt_len) 
@@ -132,14 +132,14 @@ void uart_port_transmit(uint8_t channel, const uint8_t *pkt, uint32_t pkt_len)
     assert(channel > 0);
     assert(channel <= UART_MAX_CHANNEL);
     // Get a pointer to the UART
-    pic32UartPeriph_t *uart_ptr = uart_peripherals[channel - 1];
+    pic32UartPeriph_t *p_uart = uart_peripherals[channel - 1];
     // Put one character at a time
     for (; pkt_len > 0; --pkt_len, ++pkt) 
     {
         // Wait for last byte to send
-        while (uart_ptr->sta.bits.UTXBF); // intentionally empty body
+        while (p_uart->sta.bits.UTXBF); // intentionally empty body
         // Put next character TX reg
-        uart_ptr->txreg.reg = *pkt;
+        p_uart->txreg.reg = *pkt;
     }
 }
 
@@ -149,23 +149,23 @@ void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len)
     assert(channel > 0);
     assert(channel <= UART_MAX_CHANNEL);
     // Get a pointer to the UART
-    pic32UartPeriph_t *uart_ptr = uart_peripherals[channel - 1];
+    pic32UartPeriph_t *p_uart = uart_peripherals[channel - 1];
     // Read one character at a time
     for (; buffer_len > 0; --buffer_len) 
     {
         // Wait for data to be available
-        while (!uart_ptr->sta.bits.URXDA) 
+        while (!p_uart->sta.bits.URXDA) 
         {
             // Correct for overrun
-            if (uart_ptr->sta.bits.OERR) 
+            if (p_uart->sta.bits.OERR) 
             {
                 // Handle it; in this case, just clear the error
-                uart_ptr->sta.clr = OVERRUN_CLEAR_VALUE;
+                p_uart->sta.clr = OVERRUN_CLEAR_VALUE;
             }
         }
         if (p_buffer != NULL) 
         {
-            *p_buffer++ = uart_ptr->rxreg.reg;
+            *p_buffer++ = p_uart->rxreg.reg;
         }
     }
 }
