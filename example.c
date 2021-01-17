@@ -37,13 +37,3 @@ void encode_decode_simple(uint8_t* pkt, uint32_t pkt_len, bool encode)
         }
     }
 }
-
-const uartConfig_t* get_uart_conf_battery(void)
-{
-    return &uart_conf_battery;
-}
-
-const uartConfig_t* get_uart_conf_gateway(void)
-{
-    return &uart_conf_gateway;
-}
