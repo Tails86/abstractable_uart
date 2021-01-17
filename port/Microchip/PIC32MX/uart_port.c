@@ -137,6 +137,7 @@ void uart_port_transmit(uint8_t channel, const uint8_t *pkt, uint32_t pkt_len)
     for (; pkt_len > 0; --pkt_len, ++pkt) 
     {
         // Wait for last byte to send
+        // Note: This is for simplicity's sake; in production code, I'd make this interrupt based
         while (p_uart->sta.bits.UTXBF); // intentionally empty body
         // Put next character TX reg
         p_uart->txreg.reg = *pkt;
@@ -154,6 +155,7 @@ void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len)
     for (; buffer_len > 0; --buffer_len) 
     {
         // Wait for data to be available
+        // Note: This is for simplicity's sake; in production code, I'd make this interrupt based
         while (!p_uart->sta.bits.URXDA) 
         {
             // Correct for overrun
