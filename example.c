@@ -26,14 +26,14 @@ void encode_decode_simple(uint8_t* pkt, uint32_t pkt_len, bool encode)
     {
         for (; pkt_len > 0; --pkt_len, ++pkt)
         {
-            *pkt = 100; // encode here
+            *pkt += 26;
         }
     }
     else
     {
         for (; pkt_len > 0; --pkt_len, ++pkt)
         {
-            *pkt = 200; // decode here
+            *pkt -= 26;
         }
     }
 }
