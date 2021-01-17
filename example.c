@@ -13,7 +13,11 @@ void example(void)
     uart_transmit(P_UART_CONF_BATTERY, (uint8_t*)msg, sizeof(msg));
     
     char buffer[100] = {};
-    uart_receive(P_UART_CONF_BATTERY, (uint8_t*)buffer, sizeof(buffer));
+    uint32_t len = uart_receive(P_UART_CONF_BATTERY, (uint8_t*)buffer, sizeof(buffer) - 1);
+    if (len > sizeof(buffer) - 1)
+    {
+        // Handle overflow
+    }
 }
 
 void encode_decode_simple(uint8_t* pkt, uint32_t pkt_len, bool encode)
