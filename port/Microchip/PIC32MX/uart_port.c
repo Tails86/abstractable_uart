@@ -4,7 +4,7 @@
 #include "assert.h"
 #include "target_clock.h"
 
-//
+// Value to write to clr value to clear overrun
 #define OVERRUN_CLEAR_VALUE 0x0002
 
 //! This structure was built around structures found in plib.h
