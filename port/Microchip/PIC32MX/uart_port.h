@@ -2,6 +2,7 @@
 #define __UART_PORT_H__
 
 #include <stdint.h>
+#include <plib.h>
 
 // Select the right number of UART channels based on hardware
 #ifdef _UART6_BASE_ADDRESS
