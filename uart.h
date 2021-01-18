@@ -34,7 +34,8 @@ void uart_transmit(const uartConfig_t* p_config, uint8_t* p_pkt, uint32_t pkt_le
 //! @param[in] p_config  Pointer to the UART configuration
 //! @param[out] buffer  Where the received data is to be written
 //! @param[in] pkt_len  The maximum number of bytes in buffer
+//! @param[out] p_rcv_errs  Outputs the receive errors (0 if ok, see uart_defs otherwise)
 //! @returns the number of bytes in the packet which may exceed the value of buffer_len
-uint32_t uart_receive(const uartConfig_t* p_config, uint8_t* p_buffer, uint32_t buffer_len);
+uint32_t uart_receive(const uartConfig_t* p_config, uint8_t* p_buffer, uint32_t buffer_len, uint8_t* p_rcv_errs);
 
 #endif // __UART_H__

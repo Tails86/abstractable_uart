@@ -1,6 +1,7 @@
 #include <plib.h>
 
 #include "uart_port.h"
+#include "uart_defs.h"
 #include "assert.h"
 #include "target_clock.h"
 
@@ -144,7 +145,7 @@ void uart_port_transmit(uint8_t channel, const uint8_t *pkt, uint32_t pkt_len)
     }
 }
 
-void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len) 
+void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len, uint8_t* p_rcv_errs) 
 {
     // Ensure that channel is valid
     assert(channel > 0);
@@ -152,6 +153,7 @@ void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len)
     // Get a pointer to the UART
     pic32UartPeriph_t *p_uart = uart_peripherals[channel - 1];
     // Read one character at a time
+    // NOTE: A timeout would be recommended for production code. We could otherwise get stuck here.
     for (; buffer_len > 0; --buffer_len) 
     {
         // Wait for data to be available
@@ -162,7 +164,26 @@ void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len)
             if (p_uart->sta.bits.OERR) 
             {
                 // Handle it; in this case, just clear the error
+                // NOTE: This is obviously not the right thing to do for production code. I'd want
+                // to kill this receive and flush the receive buffer before another receive is
+                // expected.
                 p_uart->sta.clr = OVERRUN_CLEAR_VALUE;
+            }
+        }
+        if (p_uart->sta.bits.PERR)
+        {
+            // Parity error for the current byte
+            if (p_rcv_errs != NULL)
+            {
+                *p_rcv_errs |= UART_ERR_MASK_PARITY;
+            }
+        }
+        if (p_uart->sta.bits.FERR)
+        {
+            // Framing error for the current byte
+            if (p_rcv_errs != NULL)
+            {
+                *p_rcv_errs |= UART_ERR_MASK_FRAMING;
             }
         }
         if (p_buffer != NULL) 

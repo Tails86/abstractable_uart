@@ -2,6 +2,7 @@
 #define __UART_PORT_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 #include <plib.h>
 
 // Select the right number of UART channels based on hardware
@@ -38,6 +39,7 @@ void uart_port_transmit(uint8_t channel, const uint8_t *pkt, uint32_t pkt_len);
 //! @param[in] channel  The UART channel number
 //! @param[out] p_buffer  Where to write data to or NULL to dump data
 //! @param[in] buffer_len  The number of bytes to receive
-void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len);
+//! @param[out] p_rcv_errs  Outputs the receive errors (0 if ok, see uart_defs otherwise)
+void uart_port_receive(uint8_t channel, uint8_t* p_buffer, uint32_t buffer_len, uint8_t* p_rcv_errs);
 
 #endif // __UART_PORT_H__

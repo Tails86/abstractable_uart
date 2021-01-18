@@ -13,8 +13,13 @@ void example(void)
     uart_transmit(P_UART_CONF_BATTERY, (uint8_t*)msg, sizeof(msg));
     
     char buffer[100] = {};
-    uint32_t len = uart_receive(P_UART_CONF_BATTERY, (uint8_t*)buffer, sizeof(buffer) - 1);
-    if (len > sizeof(buffer) - 1)
+    uint8_t rcv_errs = 0;
+    uint32_t len = uart_receive(P_UART_CONF_BATTERY, (uint8_t*)buffer, sizeof(buffer) - 1, &rcv_errs);
+    if (rcv_errs != 0)
+    {
+        // Handle receive errors
+    }
+    else if (len > sizeof(buffer) - 1)
     {
         // Handle overflow
     }
