@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "uart_defs.h"
 #include "uart_port.h"
 
 //! Encode function pointer typedef
